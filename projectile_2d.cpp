@@ -2,63 +2,47 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
-
+#include <windows.h>
 using namespace std;
+
+void gotoxy(int x, int y) {
+    COORD coord = {static_cast<SHORT>(x), static_cast<SHORT>(y)};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 
 int main()
 {
-    double v, T, angle;
+    string output="";
+    gotoxy(0,0);
+    double v, T, angleDegrees;
     // cout << "Initial height: ";
     // cin >> hi;
     // cout << "Initial Velocity: ";
     // cin >> vi;
     // cout << "Motion time: ";
     // cin >> T;
-    v = 10;
+    v = 30;
     T = 10;
     const double g = 9.8;
     const double dt = .05;
-    double v = vi;
-    double h = hi;
-    const int screenHeight = 20;   // number of rows in the ASCII screen
-    const double maxHeight = 20.0; // map 20 meters to 20 rows
-    // cout << "Time\tHeight\tVelocity\n";
-    for (double t = 0; t <= T; t = t + dt)
-    {
-        system("cls");
+    angleDegrees= 60;
+    double angleRadians=angleDegrees*numbers::pi/ 180.0;
+
+    const int screenHeight = 36;   // number of rows in the ASCII screen
+    const double maxHeight = 36.0; // map 20 meters to 20 rows
+    for (double t=0; t<=T; t+=dt) {
+        double vx = v * cos(angleRadians);
+        double vy = v * sin(angleRadians)- g*t;
+        double h = v * sin(angleRadians)*t - g*t*t/2;
+        double x = vx*t;
+        int ballrow;
+        if (h<=0 && t>0) {
+            break;
+        }
         int ballRow = screenHeight - (int)((h / maxHeight) * screenHeight);
-        if (ballRow < 0)
-            ballRow = 0;
-        if (ballRow >= screenHeight)
-            ballRow = screenHeight - 1;
-        cout << t << "\t" << h << "\t" << v << "\n";
-        v = v + dt * g;
-        h = h - dt * v;
-        // cout << "\nh: " << h<< " t: " << t << " v: " << v <<"\n";
-        if (h <= 0)
-        {
-            v = -v * energyFactor;
-            h = 0;
-        }
-        for (int row = 0; row < screenHeight; row++)
-        {
-            if (row == ballRow)
-                cout << "O\n";
-            else
-                cout << "|\n";
-        }
+        
 
-        cout << "====\nt=" << t << "  h=" << h << "  v=" << v << endl;
+        //cout << "vx: " << vx << " vy: " << vy << " h: " << h << "\n";
 
-        v = v + g * dt;
-        h = h - v * dt;
-
-        if (h <= 0)
-        {
-            h = 0;
-            v = -v * energyFactor;
-        }
-
-        this_thread::sleep_for(chrono::milliseconds(50));
     }
-}
+} 

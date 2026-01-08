@@ -2,9 +2,13 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
-
+#include <windows.h>
 using namespace std;
 
+void gotoxy(int x, int y) {
+    COORD coord = {static_cast<SHORT>(x), static_cast<SHORT>(y)};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 int main()
 {
     double hi, vi, T;
@@ -14,7 +18,7 @@ int main()
     // cin >> vi;
     // cout << "Motion time: ";
     // cin >> T;
-    hi = 10;
+    hi = 20;
     vi = 0;
     T = 10;
     const double g = 9.8;
@@ -26,14 +30,16 @@ int main()
     const double maxHeight = 20.0; // map 20 meters to 20 rows
     // cout << "Time\tHeight\tVelocity\n";
     for (double t = 0; t <= T; t = t + dt)
-    {
-        system("cls");
+    {   
+        string output ="";
+        //system("cls");
+        gotoxy(0, 0);
         int ballRow = screenHeight - (int)((h / maxHeight) * screenHeight);
         if (ballRow < 0)
             ballRow = 0;
         if (ballRow >= screenHeight)
             ballRow = screenHeight - 1;
-        //cout << t << "\t" << h << "\t" << v << "\n";
+       // output+=to_string(t)+ "\t" + to_string(h) + "\t" +to_string(v)+ "\n";
         v = v + dt * g;
         h = h - dt * v;
         // cout << "\nh: " << h<< " t: " << t << " v: " << v <<"\n";
@@ -45,13 +51,15 @@ int main()
         for (int row = 0; row < screenHeight; row++)
         {
             if (row == ballRow)
-                cout << "O\n";
+                output+= "O\n";
             else
-                cout << "|\n";
+                output+= "|\n";
         }
 
-        cout << "====\nt=" << t << "  h=" << h << "  v=" << v << endl;
+        output+= "====\nt=" + to_string(t)+ "  h=" + to_string(h) + "  v=" +to_string(v) ;
 
+        output += "                                     ";
+        cout << output<< endl;
         v = v + g * dt;
         h = h - v * dt;
 
