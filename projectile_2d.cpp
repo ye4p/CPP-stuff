@@ -7,19 +7,17 @@ using namespace std;
 
 int main()
 {
-    double hi, vi, T;
+    double v, T, angle;
     // cout << "Initial height: ";
     // cin >> hi;
     // cout << "Initial Velocity: ";
     // cin >> vi;
     // cout << "Motion time: ";
     // cin >> T;
-    hi = 10;
-    vi = 0;
+    v = 10;
     T = 10;
     const double g = 9.8;
     const double dt = .05;
-    const double energyFactor = 0.9;
     double v = vi;
     double h = hi;
     const int screenHeight = 20;   // number of rows in the ASCII screen
