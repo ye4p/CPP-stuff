@@ -3,6 +3,8 @@
 #include <thread>
 #include <chrono>
 #include <windows.h>
+#include <cstdlib>
+
 using namespace std;
 
 void gotoxy(int x, int y)
@@ -11,7 +13,7 @@ void gotoxy(int x, int y)
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-int main()
+void display()
 {
     string output = "";
     gotoxy(0, 0);
@@ -34,6 +36,7 @@ int main()
     const int screenWidth = 80;
     const double maxHeight = 36.0; // map 20 meters to 20 rows
     const double maxWidth = 80.0;
+    system("mode con cols=120 lines=40");
     for (double t = 0; t <= T; t += dt)
     {
         double vx = v * cos(angleRadians);
@@ -67,10 +70,20 @@ int main()
             }
             output += "\n";
         }
-        // cout << "vx: " << vx << " vy: " << vy << " h: " << h << "x: " << x << "\n";
 
         output += "                                     ";
-        cout << output << endl;
+        cout << output << "\n";
+        cout << "vx: " << vx << " vy: " << vy << " h: " << h << "x: " << x << endl;
         this_thread::sleep_for(chrono::milliseconds(50));
     }
+}
+
+int main()
+{
+    string line = "";
+    while (line.length() == 0)
+    {
+        cin >> line;
+    }
+    display();
 }
