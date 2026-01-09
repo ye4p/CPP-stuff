@@ -70,10 +70,7 @@ void display()
             }
             output += "\n";
         }
-
-        output += "                                     ";
-        cout << output << "\n";
-        cout << "vx: " << vx << " vy: " << vy << " h: " << h << "x: " << x << endl;
+        cout << output << "\n" << "vx: " << vx << " vy: " << vy << " h: " << h << "x: " << x << "                                     " << endl;
         this_thread::sleep_for(chrono::milliseconds(50));
     }
 }
