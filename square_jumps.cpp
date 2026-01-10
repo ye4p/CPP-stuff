@@ -24,37 +24,51 @@ void display()
     system("mode con cols=120 lines=40");
     const double dt = 0.05;
     const double T = 10.0;
-    for (double t=0; t<T; t+=dt)  {
-        for (int row = 0; row < screenHeight; row++)
+    for (double t = 0; t < T; t += dt)
     {
-            if (row==0) {
-                for (int _ = 0; _ <36; _++) {
-                    output+="_";
-                }
-                output+="\n";
-                continue;
-                } else if (row==screenHeight-1) {
-                    output+="|";
-                    for (int _ = 0; _ <34; _++) {
-                    output+="_";
-                    }
-                output+="|\n";
-                continue;
-                }
-                for (int column = 0; column < screenWidth; column++)
+        output = "";
+        for (int row = 0; row < screenHeight; row++)
+        {
+            if (row == 0 || row == screenHeight - 1)
+            {
+                output += "+";
+                for (int _ = 0; _ < screenWidth; _++)
                 {
-                    // if (row == ballRow && column == ballCol)
-                    //     output += "O";
-                    // else
-                    //     output += " ";
-                    output+=" ";
+                    output += "-";
                 }
-            output += "\n";
+                output += "+\n";
+                continue;
+            }
+            else
+            {
+                output += "|";
+                for (int _ = 0; _ < screenWidth - 2; _++)
+                {
+                    output += " ";
+                }
+                output += "|\n";
+            }
+            // for (int column = 0; column < screenWidth; column++)
+            // {
+            //     // if (row == ballRow && column == ballCol)
+            //     //     output += "O";
+            //     // else
+            //     //     output += " ";
+            //     if (column == 0 || column == screenWidth - 1)
+            //     {
+            //         output += "|";
+            //     }
+            //     else
+            //     {
+            //         output += " ";
+            //     }
+            //     output += "\n";
+            // }
         }
+        cout << output << "                                                                                                                 " << endl;
+
         this_thread::sleep_for(chrono::milliseconds(50));
     }
-    
-    
 }
 int main()
 {
