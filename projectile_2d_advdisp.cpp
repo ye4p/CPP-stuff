@@ -9,11 +9,11 @@
 using namespace std;
 
 static const int W = 800;
-static const int H = 600;
+static const int H = 800;
 static uint32_t *gPixels = nullptr;
 static BITMAPINFO gBmi = {};
 
-void initFramebuffer()
+void InitFramebuffer()
 {
     gPixels = new uint32_t[W * H];
 
@@ -44,17 +44,47 @@ void PutPixel(int x, int y, uint32_t color)
     }
     gPixels[y * W + x] = color;
 }
+void PutPixel2(int ind, uint32_t color)
+{
+    if (ind < 0 || ind >= W * H)
+    {
+        return;
+    }
+    gPixels[ind] = color;
+}
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (msg)
+    {
+    case WM_TIMER:
+        InvalidateRect(hwnd, nullptr, FALSE);
+        return 0;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        StretchDIBits(
+            hdc,
+            0, 0, W, H,
+            0, 0, W, H,
+            gPixels,
+            &gBmi,
+            DIB_RGB_COLORS,
+            SRCCOPY);
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+    }
+    return DefWindowProc(hwnd, msg, wParam, lParam);
+}
 
 void display()
 {
-    string output = "";
     double v, T, angleDegrees;
-    // cout << "Initial height: ";
-    // cin >> hi;
-    // cout << "Initial Velocity: ";
-    // cin >> vi;
-    // cout << "Motion time: ";
-    // cin >> T;
     v = 30;
     T = 10;
     const double g = 9.8;
@@ -67,7 +97,7 @@ void display()
     const int screenWidth = 80;
     const double maxHeight = 36.0; // map 20 meters to 20 rows
     const double maxWidth = 80.0;
-    system("mode con cols=120 lines=40");
+    // system("mode con cols=120 lines=40");
     for (double t = 0; t <= T; t += dt)
     {
         double vx = v * cos(angleRadians);
@@ -78,40 +108,54 @@ void display()
         {
             break;
         }
-        int ballRow = screenHeight - (int)((h / maxHeight) * screenHeight);
-        int ballCol = (int)((x / maxWidth) * screenWidth);
-        string output = "";
-        if (ballRow < 0)
-            ballRow = 0;
-        if (ballRow >= screenHeight)
-            ballRow = screenHeight - 1;
-        // if (ballCol < 0)
-        //     ballCol = 0;
-        if (ballCol >= screenWidth)
-            ballCol = screenWidth - 1;
-        for (int row = 0; row < screenHeight; row++)
-        {
-            for (int column = 0; column < screenWidth; column++)
-            {
-                if (row == ballRow && column == ballCol)
-                    output += "O";
-                else
-                    output += " ";
-            }
-            output += "\n";
-        }
-        cout << output << "\n"
-             << "vx: " << vx << " vy: " << vy << " h: " << h << "x: " << x << "                                     " << endl;
+
         this_thread::sleep_for(chrono::milliseconds(50));
     }
 }
 
 int main()
 {
-    string line = "";
-    while (line.length() == 0)
+    InitFramebuffer();
+    WNDCLASSW wc = {};
+    wc.lpfnWndProc = WndProc;
+    wc.hInstance = GetModuleHandle(nullptr);
+    wc.lpszClassName = L"MySimWindowClass";
+    RegisterClassW(&wc);
+
+    HWND hwnd = CreateWindowExW(
+        0,
+        wc.lpszClassName,
+        L"Simulation",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        W, H,
+        nullptr, nullptr,
+        wc.hInstance, nullptr);
+    ShowWindow(hwnd, SW_SHOW);
+    SetTimer(hwnd, 1, 16, nullptr);
+    MSG msg;
+    int squareW = 600;
+    int squareH = 600;
+    // top line: (squareW*(H-squareH)/2 +(W-squareW)/2 < i && squareW*(H-squareH)/2 +(W-squareW)/2 >i)
+
+    // i < W || i % W == 0 || i % W == W - 1 || i >= W * (H - 1)
+    for (int i = 0; i < W * H; i++)
     {
-        cin >> line;
+        if ((squareW * (H - squareH) / 2 + (W - squareW) / 2 > i && squareW * (H - squareH) / 2 + (W - squareW) / 2 < i))
+        {
+            PutPixel2(i, 0x00FFFFFF);
+        }
+        else
+        {
+            PutPixel2(i, 0x00000000);
+        }
     }
-    display();
+    InvalidateRect(hwnd, nullptr, FALSE);
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    ShutdownFramebuffer();
+    return 0;
 }
