@@ -17,11 +17,17 @@ static BITMAPINFO gBmi = {};
 static double maxHm=40.0;
 static double maxWm=40.0;
 
+const double pi = acos(-1);
+double angleDegrees = 30;
+double angleRadians = angleDegrees * pi / 180.0;
 double ballXm = 0.0; 
 double ballYm = 0.0; 
-double velXm= 10.0;
-double velYm=10.0;
+double velm=20.0;
 
+double velXm=velm*cos(angleRadians);
+double velYm=velm*sin(angleRadians);
+const double dt = 0.016;
+const int radiusPixels=2;
 void InitFramebuffer()
 {
     gPixels = new uint32_t[W * H];
@@ -76,15 +82,40 @@ void PutPixel2(int ind, uint32_t color)
     }
     gPixels[ind] = color;
 }
-
+void drawBall(double xm, double ym, uint32_t color) {
+    int xp= (int)(xm * (squareW/maxWm) + (W-squareW)/2);
+    int yp= (int)((maxHm-ym) * (squareH/maxHm) + (H-squareH)/2);
+    PutPixel(xp, yp, color);
+    for(int heightDraw) {
+        
+    }
+}
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
     case WM_TIMER:
-    
+    {
+        ballXm += velXm * dt; 
+        ballYm += velYm * dt;
+        if (ballXm < 0) { 
+            ballXm = 0; velXm = -velXm; 
+        } 
+        if (ballXm > maxWm) { 
+            ballXm = maxWm; velXm = -velXm; 
+        } 
+        if (ballYm < 0) { 
+            ballYm = 0; velYm = -velYm;
+        } 
+        if (ballYm > maxHm) { 
+            ballYm = maxHm; velYm = -velYm;
+        }
+        Clear(0x00000000);
+        drawSquare(); 
+        drawBall(ballXm, ballYm, 0x00FFFFFF);
         InvalidateRect(hwnd, nullptr, FALSE);
         return 0;
+    }
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
@@ -137,11 +168,7 @@ void display()
         this_thread::sleep_for(chrono::milliseconds(50));
     }
 }
-void drawBall(double xm, double ym, uint32_t color) {
-    int xp= (int)(xm * (squareW/maxWm) + (W-squareW)/2);
-    int yp= (int)(ym * (squareH/maxHm) + (H-squareH)/2);
-    PutPixel(xp, yp, color);
-}
+
 int main()
 {
     InitFramebuffer();
