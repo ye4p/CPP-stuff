@@ -96,7 +96,7 @@ void drawBall(double xm, double ym, uint32_t color) {
     // PutPixel(xp-1, yp+1, color);
     for (int layer =0; layer<radiusPixels; layer++) {
         for(int layerX=0; layerX<radiusPixels; layerX++) {
-            PutPixel(layerX, layer, color);
+            PutPixel(xp -radiusPixels+layerX, yp -radiusPixels+layer, color);
         }
     }
 }
