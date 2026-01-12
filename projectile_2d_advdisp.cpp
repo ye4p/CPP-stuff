@@ -10,8 +10,17 @@ using namespace std;
 
 static const int W = 800;
 static const int H = 800;
+static int squareW = 600;
+static int squareH = 600;
 static uint32_t *gPixels = nullptr;
 static BITMAPINFO gBmi = {};
+static double maxHm=40.0;
+static double maxWm=40.0;
+
+double ballXm = 0.0; 
+double ballYm = 0.0; 
+double velXm= 10.0;
+double velYm=10.0;
 
 void InitFramebuffer()
 {
@@ -44,6 +53,21 @@ void PutPixel(int x, int y, uint32_t color)
     }
     gPixels[y * W + x] = color;
 }
+void drawSquare() {
+    for(int i=0; i<squareW; i++) {
+        PutPixel((W-squareW)/2 + i, (H-squareH)/2, 0x00FFFFFF);
+    }
+    for(int i=0; i<squareW; i++) {
+        PutPixel((W-squareW)/2, (H-squareH)/2 + i, 0x00FFFFFF);
+    }
+    for(int i=0; i<squareW; i++) {
+        PutPixel((W-squareW)/2 + i, (H-squareH)/2 +squareH, 0x00FFFFFF);
+    }
+    for(int i=0; i<squareW; i++) {
+        PutPixel((W-squareW)/2 + squareW, (H-squareH)/2 + i, 0x00FFFFFF);
+    }
+
+}
 void PutPixel2(int ind, uint32_t color)
 {
     if (ind < 0 || ind >= W * H)
@@ -58,6 +82,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_TIMER:
+    
         InvalidateRect(hwnd, nullptr, FALSE);
         return 0;
     case WM_DESTROY:
@@ -112,7 +137,11 @@ void display()
         this_thread::sleep_for(chrono::milliseconds(50));
     }
 }
-
+void drawBall(double xm, double ym, uint32_t color) {
+    int xp= (int)(xm * (squareW/maxWm) + (W-squareW)/2);
+    int yp= (int)(ym * (squareH/maxHm) + (H-squareH)/2);
+    PutPixel(xp, yp, color);
+}
 int main()
 {
     InitFramebuffer();
@@ -134,22 +163,11 @@ int main()
     ShowWindow(hwnd, SW_SHOW);
     SetTimer(hwnd, 1, 16, nullptr);
     MSG msg;
-    int squareW = 600;
-    int squareH = 600;
+    
     // top line: (squareW*(H-squareH)/2 +(W-squareW)/2 < i && squareW*(H-squareH)/2 +(W-squareW)/2 >i)
 
     // i < W || i % W == 0 || i % W == W - 1 || i >= W * (H - 1)
-    for (int i = 0; i < W * H; i++)
-    {
-        if ((squareW * (H - squareH) / 2 + (W - squareW) / 2 > i && squareW * (H - squareH) / 2 + (W - squareW) / 2 < i))
-        {
-            PutPixel2(i, 0x00FFFFFF);
-        }
-        else
-        {
-            PutPixel2(i, 0x00000000);
-        }
-    }
+    drawSquare();
     InvalidateRect(hwnd, nullptr, FALSE);
     while (GetMessage(&msg, nullptr, 0, 0))
     {
