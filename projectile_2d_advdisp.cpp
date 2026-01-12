@@ -14,20 +14,20 @@ static int squareW = 600;
 static int squareH = 600;
 static uint32_t *gPixels = nullptr;
 static BITMAPINFO gBmi = {};
-static double maxHm=40.0;
-static double maxWm=40.0;
+static double maxHm = 40.0;
+static double maxWm = 40.0;
 
 const double pi = acos(-1);
 double angleDegrees = 30;
 double angleRadians = angleDegrees * pi / 180.0;
-double ballXm = 0.0; 
-double ballYm = 0.0; 
-double velm=30.0;
+double ballXm = 0.0;
+double ballYm = 0.0;
+double velm = 30.0;
 
-double velXm=velm*cos(angleRadians);
-double velYm=velm*sin(angleRadians);
+double velXm = velm * cos(angleRadians);
+double velYm = velm * sin(angleRadians);
 const double dt = 0.016;
-const int radiusPixels=2;
+const int radiusPixels = 2;
 void InitFramebuffer()
 {
     gPixels = new uint32_t[W * H];
@@ -59,20 +59,24 @@ void PutPixel(int x, int y, uint32_t color)
     }
     gPixels[y * W + x] = color;
 }
-void drawSquare() {
-    for(int i=0; i<squareW; i++) {
-        PutPixel((W-squareW)/2 + i, (H-squareH)/2, 0x00FFFFFF);
+void drawSquare()
+{
+    for (int i = 0; i < squareW; i++)
+    {
+        PutPixel((W - squareW) / 2 + i, (H - squareH) / 2, 0x00FFFFFF);
     }
-    for(int i=0; i<squareW; i++) {
-        PutPixel((W-squareW)/2, (H-squareH)/2 + i, 0x00FFFFFF);
+    for (int i = 0; i < squareW; i++)
+    {
+        PutPixel((W - squareW) / 2, (H - squareH) / 2 + i, 0x00FFFFFF);
     }
-    for(int i=0; i<squareW; i++) {
-        PutPixel((W-squareW)/2 + i, (H-squareH)/2 +squareH, 0x00FFFFFF);
+    for (int i = 0; i < squareW; i++)
+    {
+        PutPixel((W - squareW) / 2 + i, (H - squareH) / 2 + squareH, 0x00FFFFFF);
     }
-    for(int i=0; i<squareW; i++) {
-        PutPixel((W-squareW)/2 + squareW, (H-squareH)/2 + i, 0x00FFFFFF);
+    for (int i = 0; i < squareW; i++)
+    {
+        PutPixel((W - squareW) / 2 + squareW, (H - squareH) / 2 + i, 0x00FFFFFF);
     }
-
 }
 void PutPixel2(int ind, uint32_t color)
 {
@@ -82,9 +86,10 @@ void PutPixel2(int ind, uint32_t color)
     }
     gPixels[ind] = color;
 }
-void drawBall(double xm, double ym, uint32_t color) {
-    int xp= (int)(xm * (squareW/maxWm) + (W-squareW)/2);
-    int yp= (int)((maxHm-ym) * (squareH/maxHm) + (H-squareH)/2);
+void drawBall(double xm, double ym, uint32_t color)
+{
+    int xp = (int)(xm * (squareW / maxWm) + (W - squareW) / 2);
+    int yp = (int)((maxHm - ym) * (squareH / maxHm) + (H - squareH) / 2);
     PutPixel(xp, yp, color);
     // PutPixel(xp+1, yp, color);
     // PutPixel(xp+1, yp-1, color);
@@ -94,9 +99,11 @@ void drawBall(double xm, double ym, uint32_t color) {
     // PutPixel(xp-1, yp-1, color);
     // PutPixel(xp-1, yp, color);
     // PutPixel(xp-1, yp+1, color);
-    for (int layer =0; layer<radiusPixels; layer++) {
-        for(int layerX=0; layerX<radiusPixels; layerX++) {
-            PutPixel(xp -radiusPixels+layerX, yp -radiusPixels+layer, color);
+    for (int layer = 0; layer < radiusPixels * 2 + 1; layer++)
+    {
+        for (int layerX = 0; layerX < radiusPixels * 2 + 1; layerX++)
+        {
+            PutPixel(xp - radiusPixels + layerX, yp - radiusPixels + layer, color);
         }
     }
 }
@@ -106,22 +113,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
     case WM_TIMER:
     {
-        ballXm += velXm * dt; 
+        ballXm += velXm * dt;
         ballYm += velYm * dt;
-        if (ballXm < 0) { 
-            ballXm = 0; velXm = -velXm; 
-        } 
-        if (ballXm > maxWm) { 
-            ballXm = maxWm; velXm = -velXm; 
-        } 
-        if (ballYm < 0) { 
-            ballYm = 0; velYm = -velYm;
-        } 
-        if (ballYm > maxHm) { 
-            ballYm = maxHm; velYm = -velYm;
+        if (ballXm < 0)
+        {
+            ballXm = 0;
+            velXm = -velXm;
+        }
+        if (ballXm > maxWm)
+        {
+            ballXm = maxWm;
+            velXm = -velXm;
+        }
+        if (ballYm < 0)
+        {
+            ballYm = 0;
+            velYm = -velYm;
+        }
+        if (ballYm > maxHm)
+        {
+            ballYm = maxHm;
+            velYm = -velYm;
         }
         Clear(0x00000000);
-        drawSquare(); 
+        drawSquare();
         drawBall(ballXm, ballYm, 0x00FFFFFF);
         InvalidateRect(hwnd, nullptr, FALSE);
         return 0;
@@ -200,7 +215,7 @@ int main()
     ShowWindow(hwnd, SW_SHOW);
     SetTimer(hwnd, 1, 16, nullptr);
     MSG msg;
-    
+
     // top line: (squareW*(H-squareH)/2 +(W-squareW)/2 < i && squareW*(H-squareH)/2 +(W-squareW)/2 >i)
 
     // i < W || i % W == 0 || i % W == W - 1 || i >= W * (H - 1)
