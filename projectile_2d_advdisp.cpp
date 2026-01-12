@@ -22,7 +22,7 @@ double angleDegrees = 30;
 double angleRadians = angleDegrees * pi / 180.0;
 double ballXm = 0.0; 
 double ballYm = 0.0; 
-double velm=20.0;
+double velm=30.0;
 
 double velXm=velm*cos(angleRadians);
 double velYm=velm*sin(angleRadians);
@@ -86,8 +86,18 @@ void drawBall(double xm, double ym, uint32_t color) {
     int xp= (int)(xm * (squareW/maxWm) + (W-squareW)/2);
     int yp= (int)((maxHm-ym) * (squareH/maxHm) + (H-squareH)/2);
     PutPixel(xp, yp, color);
-    for(int heightDraw) {
-        
+    // PutPixel(xp+1, yp, color);
+    // PutPixel(xp+1, yp-1, color);
+    // PutPixel(xp+1, yp+1, color);
+    // PutPixel(xp, yp+1, color);
+    // PutPixel(xp, yp-1, color);
+    // PutPixel(xp-1, yp-1, color);
+    // PutPixel(xp-1, yp, color);
+    // PutPixel(xp-1, yp+1, color);
+    for (int layer =0; layer<radiusPixels; layer++) {
+        for(int layerX=0; layerX<radiusPixels; layerX++) {
+            PutPixel(layerX, layer, color);
+        }
     }
 }
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
