@@ -165,35 +165,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-void display()
-{
-    double v, T, angleDegrees;
-    v = 30;
-    T = 10;
-    const double g = 9.8;
-    const double dt = .05;
-    angleDegrees = 60;
-    const double pi = acos(-1);
-    double angleRadians = angleDegrees * pi / 180.0;
-
-    const int screenHeight = 36; // number of rows in the ASCII screen
-    const int screenWidth = 80;
-    const double maxHeight = 36.0; // map 20 meters to 20 rows
-    const double maxWidth = 80.0;
-    // system("mode con cols=120 lines=40");
-    for (double t = 0; t <= T; t += dt)
-    {
-        double vx = v * cos(angleRadians);
-        double vy = v * sin(angleRadians) - g * t;
-        double h = v * sin(angleRadians) * t - g * t * t / 2;
-        double x = vx * t;
-        if (h <= 0 && t > 0)
-        {
-            break;
-        }
-    }
-}
-
 int main()
 {
     InitFramebuffer();
